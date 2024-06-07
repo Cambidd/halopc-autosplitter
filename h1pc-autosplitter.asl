@@ -5,102 +5,67 @@ state ("halo") {}
 state ("haloce") {}
 
 init {
-
-    string testversion = modules.First().FileVersionInfo.FileVersion;
-
-    if (testversion != "01.00.10.0621") {
-        var Message = MessageBox.Show(
-            "This autosplitter only supports version 01.00.10.0621. "+
-            "Current detected version: "+ testversion + "\n" +
-            "Please update the game.",
-            vars.aslName+" | LiveSplit",
-            MessageBoxButtons.OK
-        );
-    }
-
     vars.watchers_h1 = new MemoryWatcherList();
 	vars.watchers_h1xy = new MemoryWatcherList();
 	vars.watchers_h1fade = new MemoryWatcherList();
 
 
     if (modules.First().ToString() == "halo.exe") {
-        if (testversion != "01.00.10.0621") {
-            var Message = MessageBox.Show(
-                "This autosplitter only supports version 01.00.10.0621. "+
-                "Current detected version: "+ testversion + "\n" +
-                "Please update the game.",
-                vars.aslName+" | LiveSplit",
-                MessageBoxButtons.OK
-            );
-        }
-        else {
-            version = "Retail: " + testversion;
+        version = "Retail";
 
-            vars.H1_scnr = 0x319779;
-            vars.H1_map = 0x2A8154;
-            vars.H1_cinflags = 0x3FFFD678;
-            vars.H1_coords = 0x2AC5BC;
-            vars.H1_fade = 0x3FF15814;
-            vars.H1_hsthread = 0x47A470;
+        vars.H1_scnr = 0x319779;
+        vars.H1_map = 0x2A8154;
+        vars.H1_cinflags = 0x3FFFD678;
+        vars.H1_coords = 0x2AC5BC;
+        vars.H1_fade = 0x3FF15814;
+        vars.H1_hsthread = 0x47A470;
 
-            vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x2F1D8C)) { Name = "tickcounter" });
-            vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x29E8D8)) { Name = "bspstate" });
+        vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x2F1D8C)) { Name = "tickcounter" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x29E8D8)) { Name = "bspstate" });
 
-            vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
+        vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
 
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
 
-            vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
-            vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
-            vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
-        }
+        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
     }
 
     else if (modules.First().ToString() == "haloce.exe") {
-        if (testversion != "01.00.10.0621") {
-            var Message = MessageBox.Show(
-                "This autosplitter only supports version 01.00.10.0621. "+
-                "Current detected version: "+ testversion + "\n" +
-                "Please update the game.",
-                vars.aslName+" | LiveSplit",
-                MessageBoxButtons.OK
-            );
-        }
-        else {
-            version = "Custom Edition: " + testversion;
+        version = "Custom Edition";
 
-            vars.H1_scnr = 0x2B4809;
-            vars.H1_map = 0x243044;
-            vars.H1_cinflags = 0x3FFFD678;
-            vars.H1_coords = 0x2474EC;
-            vars.H1_fade = 0x3FF15814;
-            vars.H1_hsthread = 0x415910;
+        vars.H1_scnr = 0x2B4809;
+        vars.H1_map = 0x243044;
+        vars.H1_cinflags = 0x3FFFD678;
+        vars.H1_coords = 0x2474EC;
+        vars.H1_fade = 0x3FF15814;
+        vars.H1_hsthread = 0x415910;
 
-            vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x292E9C)) { Name = "tickcounter" });
-            vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x2397D0)) { Name = "bspstate" });
+        vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x292E9C)) { Name = "tickcounter" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x2397D0)) { Name = "bspstate" });
 
-            vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
-            vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
+        vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
 
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
-            vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
 
-            vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
-            vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
-            vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
-        }
+        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
     }
 
 	vars.watchers_a50 = new MemoryWatcherList();
@@ -184,7 +149,7 @@ startup {
 	settings.SetToolTip("ILmode", "Makes the timer start, reset and ending split at the correct IL time for each level.");
 
     settings.Add("ILsplits", false, "Individual Level splits", "ILmode");
-	settings.SetToolTip("ILsplits", "Splits at various points during the level. Documentation somewhere. Don't use with bspmode.");
+	settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits.");
 
 	settings.Add("bspmode", false, "Split on unique \"Loading... Done\"'s ");
 	settings.SetToolTip("bspmode", "Split on unique bsp loads (\"Loading... Done\") within levels. \n" +
