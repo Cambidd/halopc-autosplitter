@@ -32,7 +32,8 @@ init {
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
-        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x8)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_coords - 0x8)) { Name = "chiefstate" });
 
         vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
         vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
@@ -61,7 +62,8 @@ init {
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
-        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x8)) { Name = "zpos" });
+        vars.watchers_h1xy.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_coords - 0x8)) { Name = "chiefstate" });
 
         vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
         vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
@@ -71,13 +73,13 @@ init {
 	vars.watchers_a50 = new MemoryWatcherList();
     vars.watchers_a50.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0x9734)) { Name = "dropship" });
 
+	vars.watchers_b30 = new MemoryWatcherList();
+    vars.watchers_b30.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0xAEC)) { Name = "pelican" });
+
 }
 
 startup {
-    print ("DO SOMETHING");
-
-    vars.aslName = "H1splitter";
-
+    // START AND END CONDITIONS
     vars.H1_ILstart = new Dictionary<string, Func<bool>> {
 		{"a10", () => vars.watchers_h1["bspstate"].Current == 0 && vars.watchers_h1xy["xpos"].Current < -55 && vars.watchers_h1["tickcounter"].Current > 280 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //poa
 		{"a30", () => ((vars.watchers_h1["tickcounter"].Current >= 182 && vars.watchers_h1["tickcounter"].Current < 190) || (!vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old && vars.watchers_h1["tickcounter"].Current > 500 && vars.watchers_h1["tickcounter"].Current < 900)) && !vars.watchers_h1["cutsceneskip"].Current }, //halo
@@ -104,13 +106,21 @@ startup {
 		{"d40", () => !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1xy["xpos"].Current > 1000 && !vars.watchers_h1["deathflag"].Current}, //maw
 	};
 
+    // IL SPLITS
     vars.H1_a50splits = new Dictionary<byte, Func<bool>> {
         {0, () => vars.watchers_a50["dropship"].Changed && vars.watchers_a50["dropship"].Current != 0 && vars.watchers_a50["dropship"].Old != 0}, //Split on c ship spawn
         {1, () => vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1["bspstate"].Old != 1}, //Split on belly
         {2, () => vars.watchers_h1xy["ypos"].Current < -24 && vars.watchers_h1["bspstate"].Current == 2}, //Split on entering hangar
-        {3, () => vars.watchers_h1["bspstate"].Current == 3 && vars.watchers_h1["bspstate"].Old != 4}, //Split on bridge bsp
-        {4, () => vars.watchers_h1xy["xpos"].Current < -6.1 && vars.watchers_h1["bspstate"].Current == 3}, //Split on rbidge exit
+        {3, () => vars.watchers_h1["bspstate"].Current == 3 && vars.watchers_h1["bspstate"].Old != 3}, //Split on bridge bsp
+        {4, () => vars.watchers_h1xy["xpos"].Current < -6.1 && vars.watchers_h1["bspstate"].Current == 3}, //Split on bridge exit
         {5, () => vars.watchers_h1["cutsceneskip"].Current && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["bspstate"].Current == 3}, //Split on prison cs
+    };
+
+    vars.H1_b30splits = new Dictionary<byte, Func<bool>> {
+        {0, () => vars.watchers_h1xy["chiefstate"].Current == 2 && vars.watchers_h1["tickcounter"].Current > 1100}, //Split on entering hog
+        {1, () => (vars.watchers_h1xy["ypos"].Current < -23.3 && vars.watchers_h1xy["xpos"].Current < 3.7) || (vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1xy["zpos"].Current < 2.0 )}, //Split on fling
+        {2, () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["bspstate"].Current == 1}, //Split on button
+        {3, () => vars.watchers_b30["pelican"].Changed && vars.watchers_b30["pelican"].Current != 0 && vars.watchers_b30["pelican"].Old != 0}, //Split on pelican spawn
     };
 
 
@@ -203,6 +213,13 @@ update {
                     vars.watchers_h1fade.UpdateAll(game);
                     if (settings["ILsplits"]) {
                         vars.watchers_a50.UpdateAll(game);
+                        vars.watchers_h1xy.UpdateAll(game);
+                    }
+                break;
+
+                case "b30":
+                    if (settings["ILsplits"]) {
+                        vars.watchers_b30.UpdateAll(game);
                         vars.watchers_h1xy.UpdateAll(game);
                     }
                 break;
@@ -320,6 +337,17 @@ split {
             switch (checklevel) {
                 case "a50":
                     foreach (var entry in vars.H1_a50splits) {
+                        if (entry.Key == vars.index) {
+                            if (entry.Value()) {
+                                vars.index++;
+                                return true;
+                            }
+                        }
+                    }
+                break;
+
+                case "b30":
+                    foreach (var entry in vars.H1_b30splits) {
                         if (entry.Key == vars.index) {
                             if (entry.Value()) {
                                 vars.index++;
