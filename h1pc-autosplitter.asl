@@ -1,5 +1,6 @@
-//Halo PC (2003) Autosplitter
-//Sort of supports Custom edition
+// Halo PC (2003) Autosplitter
+// Also supports custom edition with base campaign maps
+// Game must be updated to 1.0.10 
 
 state ("halo") {}
 state ("haloce") {}
@@ -22,6 +23,7 @@ init {
 
         vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x2F1D8C)) { Name = "tickcounter" });
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x29E8D8)) { Name = "bspstate" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
@@ -52,6 +54,7 @@ init {
 
         vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x292E9C)) { Name = "tickcounter" });
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x2397D0)) { Name = "bspstate" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
@@ -107,13 +110,23 @@ startup {
 	};
 
     // IL SPLITS
+    vars.H1_a10splits = new Dictionary<byte, Func<bool>> {
+        {0, () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["bspstate"].Current == 1}, //Split on bridge cs
+        {1, () => vars.watchers_h1["bspstate"].Current == 2 && vars.watchers_h1["bspstate"].Old != 2}, //Split on bsp switch after cafe
+        {2, () => vars.watchers_h1["bspstate"].Current == 2 && vars.watchers_h1xy["xpos"].Current < -44 && vars.watchers_h1xy["ypos"].Current > 20}, //Split on approaching flank encounter
+        {3, () => vars.watchers_h1["bspstate"].Current == 3 && vars.watchers_h1["bspstate"].Old != 3}, //Split on load before loop encounter
+        {4, () => vars.watchers_h1["bspstate"].Current == 4 && vars.watchers_h1["bspstate"].Old != 4}, //Split on load before stair encounter
+        {5, () => vars.watchers_h1["bspstate"].Current == 4 && vars.watchers_h1xy["xpos"].Current < -60 && !(vars.watchers_h1xy["xpos"].Old < -60) && vars.watchers_h1xy["ypos"].Current < 34}, //Split on entering maintenance tunnel
+        {6, () => vars.watchers_h1["bspstate"].Current == 6 && vars.watchers_h1["bspstate"].Old != 6}, //Split on last load
+    };
+
     vars.H1_a50splits = new Dictionary<byte, Func<bool>> {
         {0, () => vars.watchers_a50["dropship"].Changed && vars.watchers_a50["dropship"].Current != 0 && vars.watchers_a50["dropship"].Old != 0}, //Split on c ship spawn
         {1, () => vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1["bspstate"].Old != 1}, //Split on belly
         {2, () => vars.watchers_h1xy["ypos"].Current < -24 && vars.watchers_h1["bspstate"].Current == 2}, //Split on entering hangar
         {3, () => vars.watchers_h1["bspstate"].Current == 3 && vars.watchers_h1["bspstate"].Old != 3}, //Split on bridge bsp
         {4, () => vars.watchers_h1xy["xpos"].Current < -6.1 && vars.watchers_h1["bspstate"].Current == 3}, //Split on bridge exit
-        {5, () => vars.watchers_h1["cutsceneskip"].Current && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["bspstate"].Current == 3}, //Split on prison cs
+        {5, () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["bspstate"].Current == 3}, //Split on prison cs
     };
 
     vars.H1_b30splits = new Dictionary<byte, Func<bool>> {
@@ -209,6 +222,12 @@ update {
         if (settings["ILmode"]) {
             string checklevel = vars.watchers_h1["levelname"].Current;
             switch (checklevel) {
+                case "a10":
+                    if (settings["ILsplits"]) {
+                        vars.watchers_h1xy.UpdateAll(game);
+                    }
+                break;
+
                 case "a50":
                     vars.watchers_h1fade.UpdateAll(game);
                     if (settings["ILsplits"]) {
@@ -335,6 +354,17 @@ split {
     if (settings["ILmode"]) {
         if (settings["ILsplits"]) {
             switch (checklevel) {
+                case "a10":
+                    foreach (var entry in vars.H1_a10splits) {
+                        if (entry.Key == vars.index) {
+                            if (entry.Value()) {
+                                vars.index++;
+                                return true;
+                            }
+                        }
+                    }
+                break;
+
                 case "a50":
                     foreach (var entry in vars.H1_a50splits) {
                         if (entry.Key == vars.index) {
