@@ -7,8 +7,8 @@ state ("haloce") {}
 
 init {
     vars.watchers_h1 = new MemoryWatcherList();
-	vars.watchers_h1xy = new MemoryWatcherList();
-	vars.watchers_h1fade = new MemoryWatcherList();
+    vars.watchers_h1xy = new MemoryWatcherList();
+    vars.watchers_h1fade = new MemoryWatcherList();
 
 
     if (modules.First().ToString() == "halo.exe") {
@@ -73,10 +73,10 @@ init {
         vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
     }
 
-	vars.watchers_a50 = new MemoryWatcherList();
+    vars.watchers_a50 = new MemoryWatcherList();
     vars.watchers_a50.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0x9734)) { Name = "dropship" });
 
-	vars.watchers_b30 = new MemoryWatcherList();
+    vars.watchers_b30 = new MemoryWatcherList();
     vars.watchers_b30.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0xAEC)) { Name = "pelican" });
 
 }
@@ -84,30 +84,30 @@ init {
 startup {
     // START AND END CONDITIONS
     vars.H1_ILstart = new Dictionary<string, Func<bool>> {
-		{"a10", () => vars.watchers_h1["bspstate"].Current == 0 && vars.watchers_h1xy["xpos"].Current < -55 && vars.watchers_h1["tickcounter"].Current > 280 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //poa
-		{"a30", () => ((vars.watchers_h1["tickcounter"].Current >= 182 && vars.watchers_h1["tickcounter"].Current < 190) || (!vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old && vars.watchers_h1["tickcounter"].Current > 500 && vars.watchers_h1["tickcounter"].Current < 900)) && !vars.watchers_h1["cutsceneskip"].Current }, //halo
-		{"a50", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 900 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //tnr
-		{"b30", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 1060 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //sc
-		{"b40", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 950 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //aotcr
-		{"c10", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 700 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //343
-		{"c20", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //library
-		{"c40", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //tb
-		{"d20", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //keyes
-		{"d40", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //maw
-	};
+        {"a10", () => vars.watchers_h1["bspstate"].Current == 0 && vars.watchers_h1xy["xpos"].Current < -55 && vars.watchers_h1["tickcounter"].Current > 280 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //poa
+        {"a30", () => ((vars.watchers_h1["tickcounter"].Current >= 182 && vars.watchers_h1["tickcounter"].Current < 190) || (!vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old && vars.watchers_h1["tickcounter"].Current > 500 && vars.watchers_h1["tickcounter"].Current < 900)) && !vars.watchers_h1["cutsceneskip"].Current }, //halo
+        {"a50", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 900 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //tnr
+        {"b30", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 1060 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //sc
+        {"b40", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 950 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //aotcr
+        {"c10", () => vars.watchers_h1["tickcounter"].Current > 30 && vars.watchers_h1["tickcounter"].Current < 700 && !vars.watchers_h1["cinematic"].Current && vars.watchers_h1["cinematic"].Old }, //343
+        {"c20", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //library
+        {"c40", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //tb
+        {"d20", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //keyes
+        {"d40", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //maw
+    };
 
-	vars.H1_ILendsplits = new Dictionary<string, Func<bool>> {
-		{"a10", () => vars.watchers_h1["bspstate"].Current == 6 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //poa
-		{"a30", () => vars.watchers_h1["bspstate"].Current == 1 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //halo
-		{"a50", () => (vars.watchers_h1["bspstate"].Current == 3 || vars.watchers_h1["bspstate"].Current == 2) && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1fade["fadelength"].Current == 15 }, //tnr
-		{"b30", () => vars.watchers_h1["bspstate"].Current == 0 && !vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //sc
-		{"b40", () => vars.watchers_h1["bspstate"].Current == 2 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //aotcr
-		{"c10", () => vars.watchers_h1["bspstate"].Current != 2 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //343
-		{"c20", () => vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["tickcounter"].Current > 30 }, //library
-		{"c40", () => vars.watchers_h1["tickcounter"].Current > 30 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1fade["fadebyte"].Current != 1 }, //tb
-		{"d20", () => vars.watchers_h1fade["fadelength"].Current == 30 && !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current}, //keyes
-		{"d40", () => !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1xy["xpos"].Current > 1000 && !vars.watchers_h1["deathflag"].Current}, //maw
-	};
+    vars.H1_ILendsplits = new Dictionary<string, Func<bool>> {
+        {"a10", () => vars.watchers_h1["bspstate"].Current == 6 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //poa
+        {"a30", () => vars.watchers_h1["bspstate"].Current == 1 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //halo
+        {"a50", () => (vars.watchers_h1["bspstate"].Current == 3 || vars.watchers_h1["bspstate"].Current == 2) && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1fade["fadelength"].Current == 15 }, //tnr
+        {"b30", () => vars.watchers_h1["bspstate"].Current == 0 && !vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //sc
+        {"b40", () => vars.watchers_h1["bspstate"].Current == 2 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //aotcr
+        {"c10", () => vars.watchers_h1["bspstate"].Current != 2 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //343
+        {"c20", () => vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["tickcounter"].Current > 30 }, //library
+        {"c40", () => vars.watchers_h1["tickcounter"].Current > 30 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1fade["fadebyte"].Current != 1 }, //tb
+        {"d20", () => vars.watchers_h1fade["fadelength"].Current == 30 && !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current}, //keyes
+        {"d40", () => !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1xy["xpos"].Current > 1000 && !vars.watchers_h1["deathflag"].Current}, //maw
+    };
 
     // IL SPLITS
     vars.H1_a10splits = new Dictionary<byte, Func<bool>> {
@@ -151,66 +151,66 @@ startup {
     };
 
 
-	//GENERAL VARS INIT - most of these need to be reinit on timer reset
-	vars.startedlevel = "000";
-	vars.varsreset = false;
+    //GENERAL VARS INIT - most of these need to be reinit on timer reset
+    vars.startedlevel = "000";
+    vars.varsreset = false;
     vars.index = 0;
-	vars.dirtybsps_byte = new List<byte>();
+    vars.dirtybsps_byte = new List<byte>();
 
 
     //SETTINGS
     settings.Add("LoadSplit", true, "Spit on loading screen");
-	settings.SetToolTip("LoadSplit", "Spit on loading screen between levels (does nothing if in IL mode)");
+    settings.SetToolTip("LoadSplit", "Spit on loading screen between levels (does nothing if in IL mode)");
 
     settings.Add("MenuSplit", false, "Spit on loading level from main menu");
-	settings.SetToolTip("MenuSplit", "Spit on loading a level from the main menu. Useful for Hunter%");
+    settings.SetToolTip("MenuSplit", "Spit on loading a level from the main menu. Useful for Hunter%");
 
-	settings.Add("anylevel", false, "Start full-game runs on any level (READ THE TOOLTIP)");
-	settings.SetToolTip("anylevel", "You probably don't need to use this. This option starts the timer on any level instead of just the first level for full-game runs.");
+    settings.Add("anylevel", false, "Start full-game runs on any level (READ THE TOOLTIP)");
+    settings.SetToolTip("anylevel", "You probably don't need to use this. This option starts the timer on any level instead of just the first level for full-game runs.");
 
     settings.Add("ILmode", false, "Individual Level mode");
-	settings.SetToolTip("ILmode", "Makes the timer start, reset and ending split at the correct IL time for each level.");
+    settings.SetToolTip("ILmode", "Makes the timer start, reset and ending split at the correct IL time for each level.");
 
     settings.Add("ILsplits", false, "Individual Level splits", "ILmode");
-	settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits.");
+    settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits.");
 
-	settings.Add("bspmode", false, "Split on unique \"Loading... Done\"'s ");
-	settings.SetToolTip("bspmode", "Split on unique bsp loads (\"Loading... Done\") within levels. \n" +
-		"You'll need to add a lot of extra splits for this optiont"
-	);
-	settings.Add("deathcounter", false, "Enable Death Counter");
-	settings.SetToolTip("deathcounter", "Will automatically create a layout component for you. Feel free \n" +
-		"to move it around, but you won't be able to rename it"
-	);
+    settings.Add("bspmode", false, "Split on unique \"Loading... Done\"'s ");
+    settings.SetToolTip("bspmode", "Split on unique bsp loads (\"Loading... Done\") within levels. \n" +
+        "You'll need to add a lot of extra splits for this optiont"
+    );
+    settings.Add("deathcounter", false, "Enable Death Counter");
+    settings.SetToolTip("deathcounter", "Will automatically create a layout component for you. Feel free \n" +
+        "to move it around, but you won't be able to rename it"
+    );
 
-	//DEATH COUNTERS AND FUN
-	//DEATHS
-	vars.TextDeathCounter     = null;
-	vars.DeathCounter         = 0;
-	vars.UpdateDeathCounter = (Action)(() => {
-		if(vars.TextDeathCounter == null) {
-			foreach (dynamic component in timer.Layout.Components) {
-				if (component.GetType().Name != "TextComponent") continue;
-				
-				if (component.Settings.Text1 == "Deaths:") {
-					vars.TextDeathCounter = component.Settings;
-					break;
-				}
-			}
-			if(vars.TextDeathCounter == null) {
-				vars.TextDeathCounter = vars.CreateTextComponent("Deaths:");
-			}
-		}
-		vars.TextDeathCounter.Text2 = vars.DeathCounter.ToString();
-	});
+    //DEATH COUNTERS AND FUN
+    //DEATHS
+    vars.TextDeathCounter     = null;
+    vars.DeathCounter         = 0;
+    vars.UpdateDeathCounter = (Action)(() => {
+        if(vars.TextDeathCounter == null) {
+            foreach (dynamic component in timer.Layout.Components) {
+                if (component.GetType().Name != "TextComponent") continue;
+                
+                if (component.Settings.Text1 == "Deaths:") {
+                    vars.TextDeathCounter = component.Settings;
+                    break;
+                }
+            }
+            if(vars.TextDeathCounter == null) {
+                vars.TextDeathCounter = vars.CreateTextComponent("Deaths:");
+            }
+        }
+        vars.TextDeathCounter.Text2 = vars.DeathCounter.ToString();
+    });
 
-	vars.CreateTextComponent = (Func<string, dynamic>)((name) => {
-		var textComponentAssembly = Assembly.LoadFrom("Components\\LiveSplit.Text.dll");
-		dynamic textComponent = Activator.CreateInstance(textComponentAssembly.GetType("LiveSplit.UI.Components.TextComponent"), timer);
-		timer.Layout.LayoutComponents.Add(new LiveSplit.UI.Components.LayoutComponent("LiveSplit.Text.dll", textComponent as LiveSplit.UI.Components.IComponent));
-		textComponent.Settings.Text1 = name;
-		return textComponent.Settings;
-	}); 
+    vars.CreateTextComponent = (Func<string, dynamic>)((name) => {
+        var textComponentAssembly = Assembly.LoadFrom("Components\\LiveSplit.Text.dll");
+        dynamic textComponent = Activator.CreateInstance(textComponentAssembly.GetType("LiveSplit.UI.Components.TextComponent"), timer);
+        timer.Layout.LayoutComponents.Add(new LiveSplit.UI.Components.LayoutComponent("LiveSplit.Text.dll", textComponent as LiveSplit.UI.Components.IComponent));
+        textComponent.Settings.Text1 = name;
+        return textComponent.Settings;
+    }); 
 }
 
 update {
@@ -264,21 +264,21 @@ update {
         }
     }
 
-	if (timer.CurrentPhase == TimerPhase.Running && !vars.varsreset) {
-		vars.varsreset = true;
-	}
-	else if (timer.CurrentPhase == TimerPhase.NotRunning && vars.varsreset) {
-		vars.varsreset = false;
-		vars.dirtybsps_byte.Clear();
-		vars.startedlevel = "000";
+    if (timer.CurrentPhase == TimerPhase.Running && !vars.varsreset) {
+        vars.varsreset = true;
+    }
+    else if (timer.CurrentPhase == TimerPhase.NotRunning && vars.varsreset) {
+        vars.varsreset = false;
+        vars.dirtybsps_byte.Clear();
+        vars.startedlevel = "000";
         vars.index = 0;
 
-		vars.DeathCounter = 0;
-		if (settings["deathcounter"]) {
-			vars.UpdateDeathCounter();
-		}
-		print ("Autosplitter vars reinitalized!");
-	}
+        vars.DeathCounter = 0;
+        if (settings["deathcounter"]) {
+            vars.UpdateDeathCounter();
+        }
+        print ("Autosplitter vars reinitalized!");
+    }
 }
 
 start {
@@ -419,7 +419,7 @@ reset {
 
 isLoading {
     // I'd rather use game time in case loading gets removed at some point
-	return false;
+    return false;
 }
 
 gameTime {
