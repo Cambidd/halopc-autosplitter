@@ -1,6 +1,15 @@
 // Halo PC (2003) Autosplitter
-// Also supports custom edition with base campaign maps
-// Game must be updated to 1.0.10 
+// Supports Custom Edition with base campaign maps
+// Game must be updated to 1.0.10
+
+// FEATUES
+/* 
+    - Basic start, split and reset for fullgame and individual level speedruns
+    - BSP (loading... done) splitting
+    - Custom IL splits (WIP)
+    - Start timer on any level mode (useful for Hunter% type meme runs)
+    - Death counter
+ */
 
 state ("halo") {}
 state ("haloce") {}
