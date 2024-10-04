@@ -105,6 +105,10 @@ startup {
         {"d40", () => !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1["cutsceneskip"].Old }, //maw
     };
 
+    vars.H1_customstart = new Dictionary<string, Func<bool>> {
+        {"lumoria_a", () => (vars.watchers_h1["tickcounter"].Current >= 686 && vars.watchers_h1["tickcounter"].Current < 690 && !vars.watchers_h1["cutsceneskip"].Current)},
+    };
+
     vars.H1_ILendsplits = new Dictionary<string, Func<bool>> {
         {"a10", () => vars.watchers_h1["bspstate"].Current == 6 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //poa
         {"a30", () => vars.watchers_h1["bspstate"].Current == 1 && !vars.watchers_h1["cutsceneskip"].Old && vars.watchers_h1["cutsceneskip"].Current }, //halo
@@ -117,6 +121,7 @@ startup {
         {"d20", () => vars.watchers_h1fade["fadelength"].Current == 30 && !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current}, //keyes
         {"d40", () => !vars.watchers_h1["cinematic"].Old && vars.watchers_h1["cinematic"].Current && !vars.watchers_h1["cutsceneskip"].Current && vars.watchers_h1xy["xpos"].Current > 1000 && !vars.watchers_h1["deathflag"].Current}, //maw
     };
+
 
     // IL SPLITS
     vars.H1_a10splits = new Dictionary<byte, Func<bool>> {
@@ -176,6 +181,9 @@ startup {
 
     settings.Add("anylevel", false, "Start full-game runs on any level (READ THE TOOLTIP)");
     settings.SetToolTip("anylevel", "You probably don't need to use this. This option starts the timer on any level instead of just the first level for full-game runs.");
+
+    settings.Add("CustomMap", false, "Start full-game run for a custom campaign");
+    settings.SetToolTip("CustomMap", "Starts the timer for a supported custom campaign (ie Lumoria)");
 
     settings.Add("ILmode", false, "Individual Level mode");
     settings.SetToolTip("ILmode", "Makes the timer start, reset and ending split at the correct IL time for each level.");
@@ -292,16 +300,25 @@ update {
 
 start {
     if (vars.watchers_h1["levelname"].Current != "" || vars.watchers_h1["levelname"].Current != "ui") {
-        foreach (var entry in vars.H1_ILstart) {
-            if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
-                if (entry.Value()) {
+        if(!settings["CustomMap"]) {
+            foreach (var entry in vars.H1_ILstart) {
+                if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
+                    if (entry.Value()) {
+                        vars.startedlevel = entry.Key;
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            foreach (var entry in vars.H1_customstart) {
+                if (entry.Key == vars.watchers_h1["levelname"].Current && entry.Value()) {
                     vars.startedlevel = entry.Key;
                     return true;
                 }
             }
         }
     }
-
 }
 
 split {
@@ -421,7 +438,7 @@ reset {
     if (settings["ILmode"]) {
         return ((vars.watchers_h1["mapreset"].Current && !vars.watchers_h1["mapreset"].Old) || (vars.watchers_h1["levelname"].Current == "ui"));
     }
-    else if ((settings["anylevel"] || vars.watchers_h1["levelname"].Current == "a10") && vars.watchers_h1["levelname"].Current == vars.startedlevel && timer.CurrentPhase != TimerPhase.Ended) {
+    else if ((settings["anylevel"] || settings["CustomMap"] || vars.watchers_h1["levelname"].Current == "a10") && vars.watchers_h1["levelname"].Current == vars.startedlevel && timer.CurrentPhase != TimerPhase.Ended) {
         return ((vars.watchers_h1["mapreset"].Current && !vars.watchers_h1["mapreset"].Old) || (vars.watchers_h1["levelname"].Current != "ui" && vars.watchers_h1["levelname"].Old == "ui"));
     }
 }
