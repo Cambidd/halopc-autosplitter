@@ -18,7 +18,9 @@ init {
     vars.watchers_h1 = new MemoryWatcherList();
     vars.watchers_h1xy = new MemoryWatcherList();
     vars.watchers_h1fade = new MemoryWatcherList();
-
+    vars.watchers_a50 = new MemoryWatcherList();
+    vars.watchers_b30 = new MemoryWatcherList();
+    vars.watchers_c40 = new MemoryWatcherList();
 
     if (modules.First().ToString() == "halo.exe") {
         version = "Retail";
@@ -49,6 +51,12 @@ init {
         vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
         vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
         vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
+
+        vars.watchers_c40.Add(new MemoryWatcher<byte>(new DeepPointer(0x4603B0, 0x868, 0x1F4)) { Name = "door3state" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x4603B0, 0x730, 0x124)) { Name = "liftstate" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x47ABF0, 0x94)) { Name = "brokendoorstate" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x47ABF0, 0xA4)) { Name = "lastdoorstate" });
+
     }
 
     else if (modules.First().ToString() == "haloce.exe") {
@@ -80,14 +88,19 @@ init {
         vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
         vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
         vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
+
+        vars.watchers_c40.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FB710, 0x868, 0x1F4)) { Name = "door3state" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x3FB710, 0x730, 0x124)) { Name = "liftstate" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x416110, 0x94)) { Name = "brokendoorstate" });
+        vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x416110, 0xA4)) { Name = "lastdoorstate" });
+
     }
 
-    vars.watchers_a50 = new MemoryWatcherList();
     vars.watchers_a50.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0x9734)) { Name = "dropship" });
 
-    vars.watchers_b30 = new MemoryWatcherList();
     vars.watchers_b30.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_hsthread, 0xAEC)) { Name = "pelican" });
 
+    vars.watchers_c40.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_hsthread, 0x8CDA)) { Name = "gen1state" });
 }
 
 startup {
@@ -150,6 +163,23 @@ startup {
         {3, () => vars.watchers_b30["pelican"].Changed && vars.watchers_b30["pelican"].Current != 0 && vars.watchers_b30["pelican"].Old != 0}, //Split on pelican spawn
     };
 
+    vars.H1_c40splits = new Dictionary<byte, Func<bool>> {
+        {0, () => vars.watchers_c40["door3state"].Current == 4 && vars.watchers_c40["door3state"].Old == 0}, //Split on ext door button
+        {1, () => vars.watchers_h1xy["chiefstate"].Current == 2 && vars.watchers_h1xy["chiefstate"].Old != 2 && vars.watchers_h1["bspstate"].Current == 2}, //Split on banshee
+        {2, () => vars.watchers_c40["gen1state"].Current == 1 && vars.watchers_c40["gen1state"].Old != 1}, //Split on gen1
+        {3, () => vars.watchers_h1["bspstate"].Current == 10 && vars.watchers_h1["bspstate"].Old != 10}, //Split on ice bridge bsp
+        {4, () => vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1["bspstate"].Old != 1 && vars.watchers_h1xy["xpos"].Current > 275}, //Split on b1 start
+        {5, () => vars.watchers_h1["bspstate"].Current == 9 && vars.watchers_h1["bspstate"].Old != 9 && vars.watchers_h1xy["xpos"].Current > 275 && vars.watchers_h1xy["ypos"].Current < -495}, //Split on b1 end
+        {6, () => vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1["bspstate"].Old != 1 && vars.watchers_h1xy["xpos"].Current < 275 && vars.watchers_h1xy["ypos"].Current < -495}, //Split on b2 start
+        {7, () => vars.watchers_h1["bspstate"].Current == 8 && vars.watchers_h1["bspstate"].Old != 8 && vars.watchers_h1xy["xpos"].Current < 275}, //Split on b2 end
+        {8, () => vars.watchers_c40["liftstate"].Current == 1 && vars.watchers_c40["liftstate"].Old == 0 && vars.watchers_h1["bspstate"].Current == 8}, //Split on lift
+        {9, () => vars.watchers_h1xy["chiefstate"].Current == 2 && vars.watchers_h1xy["chiefstate"].Old != 2 && vars.watchers_h1["bspstate"].Current == 1}, //Split on ghost
+        {10, () => vars.watchers_h1["bspstate"].Current == 6 && vars.watchers_h1["bspstate"].Old != 6}, //Split on gen2 entry
+        {11, () => vars.watchers_h1xy["chiefstate"].Current == 2 && vars.watchers_h1xy["chiefstate"].Old != 2 && vars.watchers_h1["bspstate"].Current == 1}, //Split on gen2 banshee
+        {12, () => vars.watchers_c40["brokendoorstate"].Current == 1 && vars.watchers_c40["brokendoorstate"].Old == 0}, //Split on broken door button
+        {13, () => vars.watchers_c40["lastdoorstate"].Current == 1 && vars.watchers_c40["lastdoorstate"].Old == 0}, //Split on final door button
+    };
+
 
     vars.H1_levellist = new Dictionary<string, byte[]> {
         {"a10", new byte[] { 1, 2, 3, 4, 5, 6 }}, //poa
@@ -189,11 +219,16 @@ startup {
     settings.SetToolTip("ILmode", "Makes the timer start, reset and ending split at the correct IL time for each level.");
 
     settings.Add("ILsplits", false, "Individual Level splits", "ILmode");
-    settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits.");
+    settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits. You will need: \n" +
+        "PoA: 8 Splits \n" +
+        "T&R: 7 Splits \n" +
+        "SC: 5 Splits \n" +
+        "TB: 15 Splits \n" +
+        "Yet to add other levels");
 
     settings.Add("bspmode", false, "Split on unique \"Loading... Done\"'s ");
     settings.SetToolTip("bspmode", "Split on unique bsp loads (\"Loading... Done\") within levels. \n" +
-        "You'll need to add a lot of extra splits for this optiont"
+        "You'll need to add a lot of extra splits for this option"
     );
     settings.Add("deathcounter", false, "Enable Death Counter");
     settings.SetToolTip("deathcounter", "Will automatically create a layout component for you. Feel free \n" +
@@ -262,6 +297,8 @@ update {
 
                 case "c40":
                     vars.watchers_h1fade.UpdateAll(game);
+                    vars.watchers_c40.UpdateAll(game);
+                    vars.watchers_h1xy.UpdateAll(game);
                 break;
 
                 case "d20":
@@ -404,6 +441,17 @@ split {
 
                 case "b30":
                     foreach (var entry in vars.H1_b30splits) {
+                        if (entry.Key == vars.index) {
+                            if (entry.Value()) {
+                                vars.index++;
+                                return true;
+                            }
+                        }
+                    }
+                break;
+
+                case "c40":
+                    foreach (var entry in vars.H1_c40splits) {
                         if (entry.Key == vars.index) {
                             if (entry.Value()) {
                                 vars.index++;
