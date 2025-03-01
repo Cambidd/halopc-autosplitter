@@ -37,6 +37,8 @@ init {
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
+        vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
+
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
@@ -74,6 +76,8 @@ init {
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
+        vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
+
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
@@ -338,11 +342,14 @@ update {
 start {
     if (vars.watchers_h1["levelname"].Current != "" || vars.watchers_h1["levelname"].Current != "ui") {
         if(!settings["CustomMap"]) {
-            foreach (var entry in vars.H1_ILstart) {
-                if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
-                    if (entry.Value()) {
-                        vars.startedlevel = entry.Key;
-                        return true;
+            // Check that maps are build with tool, not invader-build or something.
+            if((version == "Retail" && vars.watchers_h1["buildversion"].Current == "01.00.00.0564") || (version == "Custom Edition" && vars.watchers_h1["buildversion"].Current == "01.00.00.0609")) {
+                foreach (var entry in vars.H1_ILstart) {
+                    if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
+                        if (entry.Value()) {
+                            vars.startedlevel = entry.Key;
+                            return true;
+                        }
                     }
                 }
             }
