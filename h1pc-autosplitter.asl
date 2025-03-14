@@ -25,7 +25,7 @@ init {
     if (modules.First().ToString() == "halo.exe") {
         version = "Retail";
 
-        vars.H1_scnr = 0x319779;
+        vars.H1_map_globals = 0x319738;
         vars.H1_map = 0x2A8154;
         vars.H1_cinflags = 0x3FFFD678;
         vars.H1_coords = 0x2AC5BC;
@@ -39,11 +39,11 @@ init {
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
 
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals)) { Name = "mapreset" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x1)) { Name = "gamewon" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x17)) { Name = "deathflag" });
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
@@ -64,7 +64,7 @@ init {
     else if (modules.First().ToString() == "haloce.exe") {
         version = "Custom Edition";
 
-        vars.H1_scnr = 0x2B4809;
+        vars.H1_map_globals = 0x2B47C8;
         vars.H1_map = 0x243044;
         vars.H1_cinflags = 0x3FFFD678;
         vars.H1_coords = 0x2474EC;
@@ -78,11 +78,11 @@ init {
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
 
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x41)) { Name = "mapreset" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x40)) { Name = "gamewon" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals)) { Name = "mapreset" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x1)) { Name = "gamewon" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_scnr - 0x2A)) { Name = "deathflag" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x17)) { Name = "deathflag" });
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x4)) { Name = "ypos" });
@@ -238,6 +238,8 @@ startup {
     settings.SetToolTip("deathcounter", "Will automatically create a layout component for you. Feel free \n" +
         "to move it around, but you won't be able to rename it"
     );
+    settings.Add("loadremoval", false, "Remove Loads (DO NOT ENABLE)");
+    settings.SetToolTip("loadremoval", "For testing only. On current HR rules, loads are still timed on Halo PC");
 
     //DEATH COUNTERS AND FUN
     //DEATHS
@@ -499,8 +501,12 @@ reset {
 }
 
 isLoading {
-    // I'd rather use game time in case loading gets removed at some point
-    return false;
+    if (settings["loadremoval"]) {
+        return (vars.watchers_h1["levelname"].Current != "ui" && vars.watchers_h1["gamewon"].Current);
+    }
+    else {
+        return false;
+    }
 }
 
 gameTime {
