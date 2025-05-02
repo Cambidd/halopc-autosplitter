@@ -8,12 +8,6 @@ To enable, in the "Edit Splits" window, enter "Halo: Combat Evolved" under Game 
 You should see "Autosplitting for Halo: CE (2003 PC version, by Cambid)".
 Activate the autosplitter if it is deactivated by clicking "Activate".
 
-When speedrunning standard campaign missions, the autosplitter will detect whether
-the map files are built with tool.exe rather than a 3rd party solution and will
-refuse to start if it does not detect this. This is because maps built with 3rd
-party build tools cannot be guaranteed to be 1:1 with the official build tools
-(Example being the "Refined" campaign maps).
-
 ## Settings
 The autosplitter functionality can be customised under Settings in "Edit Splits"
 By default the autosplitter is set up for full game runs. Only "Split on loading screen"

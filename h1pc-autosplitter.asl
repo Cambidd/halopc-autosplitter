@@ -238,8 +238,15 @@ startup {
     settings.SetToolTip("deathcounter", "Will automatically create a layout component for you. Feel free \n" +
         "to move it around, but you won't be able to rename it"
     );
-    settings.Add("loadremoval", false, "Remove Loads (DO NOT ENABLE)");
+
+    settings.Add("debug", false, "Experimental");
+    settings.SetToolTip("debug", "Experimental/test features. Don't enable this unless you know what you're doing");
+
+    settings.Add("loadremoval", false, "Remove Loads (DO NOT ENABLE)", "debug");
     settings.SetToolTip("loadremoval", "For testing only. On current HR rules, loads are still timed on Halo PC");
+
+    settings.Add("ignorebuildstring", false, "Ignore build string", "debug");
+    settings.SetToolTip("ignorebuildstring", "Bypass build string check for testing dodgy invader/tool_play maps");
 
     //DEATH COUNTERS AND FUN
     //DEATHS
@@ -345,7 +352,7 @@ start {
     if (vars.watchers_h1["levelname"].Current != "" || vars.watchers_h1["levelname"].Current != "ui") {
         if(!settings["CustomMap"]) {
             // Check that maps are build with tool, not invader-build or something.
-            if((version == "Retail" && vars.watchers_h1["buildversion"].Current == "01.00.00.0564") || (version == "Custom Edition" && vars.watchers_h1["buildversion"].Current == "01.00.00.0609")) {
+            if(settings["ignorebuildstring"] || ((version == "Retail" && vars.watchers_h1["buildversion"].Current == "01.00.00.0564") || (version == "Custom Edition" && vars.watchers_h1["buildversion"].Current == "01.00.00.0609"))) {
                 foreach (var entry in vars.H1_ILstart) {
                     if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
                         if (entry.Value()) {
