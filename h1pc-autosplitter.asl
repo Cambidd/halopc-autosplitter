@@ -152,7 +152,7 @@ startup {
     };
 
     vars.H1_a50splits = new Dictionary<byte, Func<bool>> {
-        {0, () => vars.watchers_a50["dropship"].Changed && vars.watchers_a50["dropship"].Current != 0 && vars.watchers_a50["dropship"].Old != 0}, //Split on c ship spawn
+        {0, () => vars.watchers_a50["dropship"].Changed && vars.watchers_a50["dropship"].Current != 0 && vars.watchers_a50["dropship"].Old != 0 && vars.watchers_h1["difficulty"].Current == 3}, //Split on c ship spawn (on leg)
         {1, () => vars.watchers_h1["bspstate"].Current == 1 && vars.watchers_h1["bspstate"].Old != 1}, //Split on belly
         {2, () => vars.watchers_h1xy["ypos"].Current < -24 && vars.watchers_h1["bspstate"].Current == 2}, //Split on entering hangar
         {3, () => vars.watchers_h1["bspstate"].Current == 3 && vars.watchers_h1["bspstate"].Old != 3}, //Split on bridge bsp
@@ -225,7 +225,7 @@ startup {
     settings.Add("ILsplits", false, "Individual Level splits", "ILmode");
     settings.SetToolTip("ILsplits", "Cambid's special sauce IL splits. You will need: \n" +
         "PoA: 8 Splits \n" +
-        "T&R: 7 Splits \n" +
+        "T&R: 6 Splits (7 on legendary) \n" +
         "SC: 5 Splits \n" +
         "TB: 15 Splits \n" +
         "Yet to add other levels");
@@ -244,9 +244,6 @@ startup {
 
     settings.Add("loadremoval", false, "Remove Loads (DO NOT ENABLE)", "debug");
     settings.SetToolTip("loadremoval", "For testing only. On current HR rules, loads are still timed on Halo PC");
-
-    settings.Add("ignorebuildstring", false, "Ignore build string", "debug");
-    settings.SetToolTip("ignorebuildstring", "Bypass build string check for testing dodgy invader/tool_play maps");
 
     //DEATH COUNTERS AND FUN
     //DEATHS
@@ -352,7 +349,7 @@ start {
     if (vars.watchers_h1["levelname"].Current != "" || vars.watchers_h1["levelname"].Current != "ui") {
         if(!settings["CustomMap"]) {
             // Check that maps are build with tool, not invader-build or something.
-            if(settings["ignorebuildstring"] || ((version == "Retail" && vars.watchers_h1["buildversion"].Current == "01.00.00.0564") || (version == "Custom Edition" && vars.watchers_h1["buildversion"].Current == "01.00.00.0609"))) {
+            if((version == "Retail" && vars.watchers_h1["buildversion"].Current == "01.00.00.0564") || (version == "Custom Edition" && vars.watchers_h1["buildversion"].Current == "01.00.00.0609")) {
                 foreach (var entry in vars.H1_ILstart) {
                     if (entry.Key == vars.watchers_h1["levelname"].Current && (entry.Key == "a10" || (settings["ILmode"] || settings["anylevel"]))) {
                         if (entry.Value()) {
@@ -445,6 +442,10 @@ split {
                 break;
 
                 case "a50":
+                    // Skip the dropship split on lower than legendary difficulty
+                    if (vars.index == 0 && vars.watchers_h1["difficulty"].Current != 3) {
+                        vars.index++;
+                    }
                     foreach (var entry in vars.H1_a50splits) {
                         if (entry.Key == vars.index) {
                             if (entry.Value()) {

@@ -28,7 +28,7 @@ been implemented. The additional splits are as follows:
 - Split on load for final area
 
 #### The Truth and Reconciliation
-- Split on covenant dropship spawn at lift
+- Split on covenant dropship spawn at lift (Legendary only)
 - Split on entering belly (skipping lift cutscene)
 - Split on entering hangar
 - Split on load before bridge encounter
