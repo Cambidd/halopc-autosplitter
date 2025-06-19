@@ -27,22 +27,22 @@ init {
 
         vars.H1_map_globals = 0x319738;
         vars.H1_map = 0x2A8154;
-        vars.H1_cinflags = 0x3FFFD678;
+        vars.H1_cinflags = 0x2F187C;
         vars.H1_coords = 0x2AC5BC;
-        vars.H1_fade = 0x3FF15814;
+        vars.H1_fade = 0x2F1884;
         vars.H1_hsthread = 0x47A470;
 
         vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x2F1D8C)) { Name = "tickcounter" });
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x29E8D8)) { Name = "bspstate" });
-        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x2E2DEC, 0x126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
 
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals)) { Name = "mapreset" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x1)) { Name = "gamewon" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags, 0x8)) { Name = "cinematic" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags, 0x9)) { Name = "cutsceneskip" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x17)) { Name = "deathflag" });
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
@@ -50,9 +50,9 @@ init {
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x8)) { Name = "zpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_coords - 0x8)) { Name = "chiefstate" });
 
-        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
-        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
-        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade, 0xF8)) { Name = "fadetick" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade, 0xFC)) { Name = "fadelength" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade, 0xFE)) { Name = "fadebyte" });
 
         vars.watchers_c40.Add(new MemoryWatcher<byte>(new DeepPointer(0x4603B0, 0x868, 0x1F4)) { Name = "door3state" });
         vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x4603B0, 0x730, 0x124)) { Name = "liftstate" });
@@ -66,22 +66,22 @@ init {
 
         vars.H1_map_globals = 0x2B47C8;
         vars.H1_map = 0x243044;
-        vars.H1_cinflags = 0x3FFFD678;
+        vars.H1_cinflags = 0x28C83C;
         vars.H1_coords = 0x2474EC;
-        vars.H1_fade = 0x3FF15814;
+        vars.H1_fade = 0x28C844;
         vars.H1_hsthread = 0x415910;
 
         vars.watchers_h1.Add(new MemoryWatcher<uint>(new DeepPointer(0x292E9C)) { Name = "tickcounter" });
         vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x2397D0)) { Name = "bspstate" });
-        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FC00126)) { Name = "difficulty" });
+        vars.watchers_h1.Add(new MemoryWatcher<byte>(new DeepPointer(0x27DDAC, 0x126)) { Name = "difficulty" });
 
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x20), 32) { Name = "levelname" });
         vars.watchers_h1.Add(new StringWatcher(new DeepPointer(vars.H1_map + 0x40), 32) { Name = "buildversion" });
 
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals)) { Name = "mapreset" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x1)) { Name = "gamewon" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x1)) { Name = "cinematic" });
-        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags + 0x2)) { Name = "cutsceneskip" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags, 0x8)) { Name = "cinematic" });
+        vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_cinflags, 0x9)) { Name = "cutsceneskip" });
         vars.watchers_h1.Add(new MemoryWatcher<bool>(new DeepPointer(vars.H1_map_globals + 0x17)) { Name = "deathflag" });
 
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords)) { Name = "xpos" });
@@ -89,9 +89,9 @@ init {
         vars.watchers_h1xy.Add(new MemoryWatcher<float>(new DeepPointer(vars.H1_coords + 0x8)) { Name = "zpos" });
         vars.watchers_h1xy.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_coords - 0x8)) { Name = "chiefstate" });
 
-        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade)) { Name = "fadetick" });
-        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade + 0x4)) { Name = "fadelength" });
-        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade + 0x6)) { Name = "fadebyte" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<uint>(new DeepPointer(vars.H1_fade, 0xF8)) { Name = "fadetick" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<ushort>(new DeepPointer(vars.H1_fade, 0xFC)) { Name = "fadelength" });
+        vars.watchers_h1fade.Add(new MemoryWatcher<byte>(new DeepPointer(vars.H1_fade, 0xFE)) { Name = "fadebyte" });
 
         vars.watchers_c40.Add(new MemoryWatcher<byte>(new DeepPointer(0x3FB710, 0x868, 0x1F4)) { Name = "door3state" });
         vars.watchers_c40.Add(new MemoryWatcher<float>(new DeepPointer(0x3FB710, 0x730, 0x124)) { Name = "liftstate" });
